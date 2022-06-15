@@ -93,10 +93,10 @@ class Login extends Component {
                         </Card.Body>
                     </Card>
 
-                    
-                {isLoggedIn() && (
-                    <Navigate to='/viewer' />
-                )}
+
+                    {isLoggedIn() && (
+                        <Navigate to='/viewer' />
+                    )}
                 </main>
 
             </>

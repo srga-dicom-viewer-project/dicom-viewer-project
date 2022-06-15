@@ -2,32 +2,17 @@ import React, { useState } from 'react';
 import { Alert, Button, Form, ProgressBar } from "react-bootstrap"
 import axios from 'axios';
 
-function UploadAlert(message) {
-  var msg = message.message
-  if (msg === "File Uploaded") {
-    return (
-      <Alert variant="success">
-        {msg}
-      </Alert>
-    );
-  } else {
-    return (
-      <Alert variant="danger">
-        {msg}
-      </Alert>
-    );
-  }
-}
-
 const FileUpload = () => {
   const [file, setFile] = useState('');                        // The file that is selected to be uploaded
   const [uploadedFile, setUploadedFile] = useState({});        // The file that has been uploaded
-  const [message, setMessage] = useState("");                  // The message to return to the user
+  const [alert, setAlert] = useState({});                  // The message to return to the user
   const [uploadPercentage, setUploadPercentage] = useState(0); // The percentage of the upload
   const [uploading, setUploading] = useState(false)            // Whether a file is uploading
 
   const onChange = event => {
-    setFile(event.target.files[0]);
+    if (event.target.files) {
+      setFile(event.target.files[0]);
+    }
   };
 
   const onSubmit = async event => {
@@ -38,7 +23,6 @@ const FileUpload = () => {
     const formData = new FormData();
     formData.append('file', file);
 
-
     try {
       // This might not work all the time
       const res = await axios.post('http://localhost:5000/upload', formData, {
@@ -48,7 +32,12 @@ const FileUpload = () => {
         onUploadProgress: progressEvent => {
           setUploadPercentage(parseInt(Math.round((progressEvent.loaded * 100) / progressEvent.total)));
         }
-      });
+      }).catch((error) => {
+        setAlert({
+          variant: 'danger',
+          message: error.message
+        });
+      })
 
       setTimeout(() => setUploadPercentage(0), 10000);
 
@@ -57,13 +46,18 @@ const FileUpload = () => {
       // Puts the keys "fileName" and "filePath" into uploadedFile
       setUploadedFile({ fileName, filePath });
 
-      setMessage('File Uploaded');
+      setAlert({
+        variant: 'success',
+        message: 'File Uploaded'
+      });
+
     } catch (error) {
-      if (error.response.status === 500) {
-        setMessage('There was a problem with the server');
-      } else {
-        setMessage(error.response.data.msg);
-      }
+      setAlert({
+        variant: 'error',
+        message: ((error.response.status === 500) ? 'There was a problem with the server' : error.response.data.msg)
+      });
+      console.error(error)
+
       setUploadPercentage(0)
     }
     setUploading(false)
@@ -71,10 +65,10 @@ const FileUpload = () => {
 
   return (
     <>
-      {message ? <UploadAlert message={message} /> : null}
+      {/* This basically checks if the keys of alert is empty */}
+      {/* If it is empty, that means that the alert has not been set yet and no alert will show */}
+      {Object.keys(alert).length > 0 && (<Alert variant={alert.variant}>{alert.message}</Alert>)}
 
-      {/* This basically checks if the keys of uploadedFile is empty */}
-      {/* If it is empty, that means that the file has not been uploaded yet */}
       {!Object.keys(uploadedFile).length ? (
         <Form onSubmit={onSubmit}>
           <Form.Control type="file" className='custom-file mb-4 ' id='customFile' onChange={onChange} required />
