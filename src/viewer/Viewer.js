@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { Nav, Navbar, Container } from "react-bootstrap"
 import { setLoggedIn } from '../App'
+import FileUpload from './upload/FileUpload'
 import "./Viewer.css"
 
 class Viewer extends Component {
@@ -23,6 +24,7 @@ class Viewer extends Component {
                 </header>
 
                 <main>
+                    <FileUpload />
                 </main>
             </>
         )
