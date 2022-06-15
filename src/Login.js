@@ -32,11 +32,7 @@ class Login extends Component {
     handleSubmit = (event) => {
         event.preventDefault();
 
-        // TODO: Move these credentials into an environment
-        // For now we'll just use hardcoded credentials
-        // Email: doctor@hospital.com
-        // Password: 123
-        if (this.state.email === "doctor@hospital.com" && this.state.password === "123") {
+        if (this.state.email === process.env.REACT_APP_VALID_EMAIL && this.state.password === process.env.REACT_APP_VALID_PASSWORD) {
             setLoggedIn(true)
 
             // May seem unnecessary, but react won't re-render without this

@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const fileUpload = require('express-fileupload');
 const cors = require('cors');
@@ -27,4 +28,4 @@ app.post('/upload', (req, res) => {
     });
 });
 
-app.listen(5000, () => console.log('Server Started!'));
+app.listen(process.env.REACT_APP_API_PORT, () => console.log(`Server Started On Port ${process.env.REACT_APP_API_PORT}!`));
