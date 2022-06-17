@@ -1,11 +1,20 @@
 import React, { Component } from 'react'
 import { Alert, Card, Form, Button } from "react-bootstrap"
 import { Navigate } from 'react-router-dom'
-import { setLoggedIn, isLoggedIn } from './App'
 import "./App.css"
 import "./Login.css"
 
-class Login extends Component {
+// Sets loggedIn to true on the user's broswer
+export const setLoggedIn = function (loggedIn) {
+    sessionStorage.setItem('loggedIn', loggedIn)
+}
+
+// Checks to see if user has loggedIn set to true
+export const isLoggedIn = function () {
+    return sessionStorage.getItem('loggedIn') === 'true'
+}
+
+export class Login extends Component {
 
     constructor(props) {
         super(props);
@@ -99,5 +108,3 @@ class Login extends Component {
         )
     }
 }
-
-export default Login

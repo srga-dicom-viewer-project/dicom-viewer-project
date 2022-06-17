@@ -1,10 +1,33 @@
 import React, { Component } from 'react'
 import { Nav, Navbar, Container } from "react-bootstrap"
-import { setLoggedIn } from '../App'
+import { setLoggedIn } from '../Login'
 import FileUpload from './upload/FileUpload'
+import CornerstoneViewer from './CornerstoneViewer'
 import "./Viewer.css"
 
 class Viewer extends Component {
+
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            file: {}
+        };
+    }
+
+    setFile = (providedFile) => {
+        this.setState({
+            file: providedFile
+        });
+    }
+
+    getFile = () => {
+        return this.state.file
+    }
+
+    isFile = () => {
+        return Object.keys(this.getFile()).length > 0
+    }
 
     render() {
         return (
@@ -24,7 +47,7 @@ class Viewer extends Component {
                 </header>
 
                 <main>
-                    <FileUpload />
+                    {(this.isFile() ? <CornerstoneViewer getFile={this.getFile} /> : <FileUpload setFile={this.setFile} />)}
                 </main>
             </>
         )

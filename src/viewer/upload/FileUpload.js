@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { Alert, Button, Form, ProgressBar } from "react-bootstrap"
 import axios from 'axios';
 
-const FileUpload = () => {
-  const [file, setFile] = useState('');                        // The file that is selected to be uploaded
+const FileUpload = ({setFile}) => {
+  const [localFile, setLocalFile] = useState('');                        // The file that is selected to be uploaded
   const [uploadedFile, setUploadedFile] = useState({});        // The file that has been uploaded
   const [alert, setAlert] = useState({});                  // The message to return to the user
   const [uploadPercentage, setUploadPercentage] = useState(0); // The percentage of the upload
@@ -11,7 +11,7 @@ const FileUpload = () => {
 
   const onChange = event => {
     if (event.target.files) {
-      setFile(event.target.files[0]);
+      setLocalFile(event.target.files[0]);
     }
   };
 
@@ -21,7 +21,7 @@ const FileUpload = () => {
     setUploading(true)
 
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append('file', localFile);
 
     try {
       // This might not work all the time
@@ -46,17 +46,21 @@ const FileUpload = () => {
       // Puts the keys "fileName" and "filePath" into uploadedFile
       setUploadedFile({ fileName, filePath });
 
+      setFile({ fileName, filePath })
+
       setAlert({
         variant: 'success',
         message: 'File Uploaded'
       });
 
+
     } catch (error) {
+      console.error(error)
+
       setAlert({
         variant: 'error',
         message: ((error.response.status === 500) ? 'There was a problem with the server' : error.response.data.msg)
       });
-      console.error(error)
 
       setUploadPercentage(0)
     }

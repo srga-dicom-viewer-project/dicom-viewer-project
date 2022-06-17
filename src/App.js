@@ -1,18 +1,8 @@
 import "bootstrap/dist/css/bootstrap.min.css"
 import React, { Component } from 'react'
 import { Navigate, BrowserRouter, Routes, Route } from "react-router-dom"
-import Login from './Login'
+import { Login, isLoggedIn } from './Login'
 import Viewer from './viewer/Viewer'
-
-// Sets loggedIn to true on the user's broswer
-export const setLoggedIn = function (loggedIn) {
-  sessionStorage.setItem('loggedIn', loggedIn);
-}
-
-// Checks to see if user has loggedIn set to true
-export const isLoggedIn = function () {
-  return sessionStorage.getItem('loggedIn') === 'true'
-}
 
 class App extends Component {
   render() {
