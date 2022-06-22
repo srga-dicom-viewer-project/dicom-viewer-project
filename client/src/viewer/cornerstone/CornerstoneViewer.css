@@ -1,0 +1,11 @@
+.cornerstone-viewer {
+  width: 75%;
+  height: 70vh;
+  display: flex;
+  flex-wrap: nowrap;
+}
+
+.viewer {
+  margin: auto;
+  position: absolute;
+}

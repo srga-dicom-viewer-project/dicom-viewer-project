@@ -4,4 +4,4 @@
 https://trello.com/b/XyImPIjY/kanban-board
 
 ## Installation
-To start, first do run `npm install` then run `npm run dev`.
+To start, first do run `npm install --force` then run `npm run start`.

@@ -1,11 +1,20 @@
 import React, { Component } from 'react'
 import { Alert, Card, Form, Button } from "react-bootstrap"
 import { Navigate } from 'react-router-dom'
-import { setLoggedIn, isLoggedIn } from './App'
-import "./App.css"
+import "../App.css"
 import "./Login.css"
 
-class Login extends Component {
+// Sets loggedIn to true on the user's broswer
+export const setLoggedIn = function (loggedIn) {
+    sessionStorage.setItem('loggedIn', loggedIn)
+}
+
+// Checks to see if user has loggedIn set to true
+export const isLoggedIn = function () {
+    return sessionStorage.getItem('loggedIn') === 'true'
+}
+
+export class Login extends Component {
 
     constructor(props) {
         super(props);
@@ -80,24 +89,16 @@ class Login extends Component {
                                     <Form.Label>Password</Form.Label>
                                 </Form.Floating>
 
-                                {this.state.invalid && (
-                                    <Alert variant="danger">Invalid email or password.</Alert>
-                                )}
+                                {this.state.invalid && (<Alert variant="danger">Invalid email or password.</Alert>)}
 
                                 <Button className="btn-lg" variant="primary" type="submit">Log in</Button>
                             </Form>
                         </Card.Body>
                     </Card>
 
-
-                    {isLoggedIn() && (
-                        <Navigate to='/viewer' />
-                    )}
+                    {isLoggedIn() && (<Navigate to="/viewer" />)}
                 </main>
-
             </>
         )
     }
 }
-
-export default Login

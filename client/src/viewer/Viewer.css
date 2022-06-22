@@ -1,0 +1,43 @@
+.wrapper {
+    background-color: #f5f5f5;
+}
+
+.sidebar-dropdown {
+    position: static;
+    top: 0;
+    left: 0;
+    max-height: 90vh;
+    background: transparent;
+    overflow: hidden;
+    overflow-y: auto;
+}
+
+.sidebar-upload-button {
+    position: relative;
+    bottom: 0.5%;
+}
+
+.sidebar-wrapper {
+    width: fit-content;
+    max-height: 100vh;
+    min-height: 100vh;
+    white-space: nowrap;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-wrapper .sidebar-heading {
+    text-align: center;
+    padding: 0.875rem 1.25rem;
+    font-size: 1.2rem;
+}
+
+.navbar-text {
+    margin-right: 0.875rem;
+    padding: 0;
+}
+
+.page-wrapper {
+    min-width: 0;
+    width: 100%;
+}
