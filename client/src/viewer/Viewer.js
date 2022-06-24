@@ -1,10 +1,10 @@
-import React, { Component } from 'react'
-import { Navigate } from 'react-router-dom'
-import { Button, Dropdown, Nav, Navbar, } from "react-bootstrap"
-import { isLoggedIn, setLoggedIn } from '../login/Login'
-import FileUpload from './upload/FileUpload'
-import CornerstoneViewer from './cornerstone/CornerstoneViewer'
-import "./Viewer.css"
+import React, { Component } from 'react';
+import { Navigate } from 'react-router-dom';
+import { Button, Dropdown, Nav, Navbar, } from "react-bootstrap";
+import { isLoggedIn, setLoggedIn } from '../login/Login';
+import CornerstoneViewer from './cornerstone/CornerstoneViewer';
+import FileUpload from './upload/FileUpload';
+import "./Viewer.css";
 
 class Viewer extends Component {
     constructor() {
