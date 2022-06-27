@@ -10,7 +10,7 @@ class App extends Component {
             <BrowserRouter>
                 <Routes>
                     { /* If the user is logged in, the landing will redirect to viewer, otherwise it will prompt the login */}
-                    <Route path="/" element={<Navigate to={(isLoggedIn() ? '/viewer' : '/login')} />} />
+                    <Route path='/' element={<Navigate to={(isLoggedIn() ? '/viewer' : '/login')} />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/viewer" element={<Viewer />} />
                 </Routes>

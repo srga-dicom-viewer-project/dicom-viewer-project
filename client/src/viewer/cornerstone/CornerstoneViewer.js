@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
+import { Card } from 'react-bootstrap';
 import CornerstoneViewport from 'react-cornerstone-viewport';
-import * as cornerstone from "cornerstone-core";
-import * as cornerstoneWADOImageLoader from "cornerstone-wado-image-loader";
+import * as cornerstone from 'cornerstone-core';
+import * as cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
 import initCornerstone from './initCornerstone.js';
-import "./CornerstoneViewer.css";
+import './CornerstoneViewer.css';
 
 initCornerstone();
 cornerstoneWADOImageLoader.external.cornerstone = cornerstone;
@@ -53,15 +54,15 @@ const CornerstoneViewer = ({ files, select }) => {
     });
 
     return (
-        <div className="cornerstone-viewer">
+        <Card bg='dark' className='cornerstone-viewer'>
             <CornerstoneViewport
-                className="viewer"
+                className='viewer'
                 tools={state.tools}
                 imageIds={state.imageIds}
                 imageIdIndex={state.imageIdIndex}
                 activeTool={state.activeTool}
             />
-        </div>
+        </Card>
     );
 };
 
