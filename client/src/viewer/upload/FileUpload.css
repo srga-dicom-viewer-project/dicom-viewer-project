@@ -1,0 +1,47 @@
+.upload-alert {
+    display: inline-block;
+    clear: both;
+}
+
+.upload-card {
+    width: 75vh;
+    height: 70vh;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.upload-card-body {
+    white-space: nowrap;
+    overflow: hidden;
+    overflow-y: auto;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+}
+
+.upload-card-body-dropzone {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    flex-direction: column;
+}
+
+.upload-card-body-dropzone-icon {
+    background: var(--bs-gray-dark);
+    border-radius: 8em;
+    line-height: 10em;
+    margin-bottom: 10px;
+    margin-top: 10px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 10em;
+}
+
+.hover {
+    background: var(--bs-gray-800);
+    -webkit-transition: background-color 200ms linear;
+    -ms-transition: background-color 200ms linear;
+    transition: background-color 200ms linear;
+}

@@ -1,15 +1,16 @@
-import React from 'react'
-import CornerstoneViewport from 'react-cornerstone-viewport'
-import * as cornerstone from "cornerstone-core"
-import * as cornerstoneWADOImageLoader from "cornerstone-wado-image-loader"
-import "./CornerstoneViewer.css"
+import React, { useState } from 'react';
+import { Card } from 'react-bootstrap';
+import CornerstoneViewport from 'react-cornerstone-viewport';
+import * as cornerstone from 'cornerstone-core';
+import * as cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
 import initCornerstone from './initCornerstone.js';
+import './CornerstoneViewer.css';
 
 initCornerstone();
 cornerstoneWADOImageLoader.external.cornerstone = cornerstone;
 
 const CornerstoneViewer = ({ files, select }) => {
-    const state = {
+    const [state, setState] = useState({
         tools: [
             // Mouse
             {
@@ -41,23 +42,27 @@ const CornerstoneViewer = ({ files, select }) => {
         ],
         imageIds: Array.from(files.values()),
         // Form
-        imageIdIndex: 0,
         activeTool: 'Wwwc',
-    };
+        imageIdIndex: 0,
+    });
 
     select((text) => {
-        state.imageIdIndex = state.imageIds.indexOf(text)
+        setState(state => ({
+            ...state,
+            imageIdIndex: parseInt(state.imageIds.indexOf(text))
+        }))
     });
 
     return (
-        <div className="cornerstone-viewer">
+        <Card bg='dark' className='cornerstone-viewer'>
             <CornerstoneViewport
-                className="viewer"
+                className='viewer'
                 tools={state.tools}
                 imageIds={state.imageIds}
                 imageIdIndex={state.imageIdIndex}
+                activeTool={state.activeTool}
             />
-        </div>
+        </Card>
     );
 };
 

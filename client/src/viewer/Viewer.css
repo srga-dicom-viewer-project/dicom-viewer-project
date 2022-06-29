@@ -2,28 +2,42 @@
     background-color: #f5f5f5;
 }
 
-.sidebar-dropdown {
-    position: static;
-    top: 0;
-    left: 0;
-    max-height: 90vh;
-    background: transparent;
-    overflow: hidden;
-    overflow-y: auto;
+.sidebar-selector {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 10px;
+    padding-top: 0px;
+}
+
+.sidebar-list {
+    justify-content: flex-start;
+    flex: 1 1 1px;
+    max-width: 35rem;
+    overflow: auto;
+}
+
+.sidebar-list-item {
+    background-color: var(--bs-gray-800);
+}
+
+.sidebar-list-item:hover {
+    background-color: var(--bs-gray-700);
 }
 
 .sidebar-upload-button {
-    position: relative;
-    bottom: 0.5%;
+    align-self: flex-end;
+    margin-top: 10px;
+    width: 100%;
 }
 
 .sidebar-wrapper {
+    display: flex;
+    flex-direction: column;
     width: fit-content;
     max-height: 100vh;
     min-height: 100vh;
     white-space: nowrap;
-    display: flex;
-    flex-direction: column;
 }
 
 .sidebar-wrapper .sidebar-heading {
