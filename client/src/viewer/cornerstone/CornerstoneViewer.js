@@ -9,7 +9,7 @@ import './CornerstoneViewer.css';
 initCornerstone();
 cornerstoneWADOImageLoader.external.cornerstone = cornerstone;
 
-const CornerstoneViewer = ({ files, select }) => {
+const CornerstoneViewer = ({ files, select, setActiveFile }) => {
     const [state, setState] = useState({
         tools: [
             // Mouse
@@ -61,6 +61,8 @@ const CornerstoneViewer = ({ files, select }) => {
                 imageIds={state.imageIds}
                 imageIdIndex={state.imageIdIndex}
                 activeTool={state.activeTool}
+                isStackPrefetchEnabled={true}
+                onNewImage={(event) => setActiveFile(event.sopInstanceUid)}
             />
         </Card>
     );

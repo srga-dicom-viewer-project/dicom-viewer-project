@@ -19,6 +19,17 @@
 
 .sidebar-list-item {
     background-color: var(--bs-gray-800);
+    position: relative;
+    display: block;
+    padding: .5rem 1rem;
+    color: #212529;
+    text-decoration: none;
+    border: 1px solid rgba(0,0,0,.125);
+}
+
+.sidebar-list-item-active {
+    pointer-events: none;
+    background-color: var(--bs-gray-900);
 }
 
 .sidebar-list-item:hover {

@@ -11,7 +11,8 @@ class Viewer extends Component {
         super();
 
         this.state = {
-            files: new Map()
+            files: new Map(),
+            activeFile: ''
         };
     }
 
@@ -29,6 +30,16 @@ class Viewer extends Component {
         return this.getFiles().size > 0
     }
 
+    setActiveFile = (activeFile) => {
+        this.setState({
+            activeFile: activeFile
+        })
+    }
+
+    getActiveFile = () => {
+        return this.state.activeFile
+    }
+
     signOut = () => {
         setLoggedIn(false)
         this.setFiles(new Map())
@@ -36,7 +47,14 @@ class Viewer extends Component {
 
     getFileElements = () => {
         return [...this.getFiles()].map(([fileName, fileURL], index) => {
-            return <ListGroup.Item className='text-white sidebar-list-item' key={index} action onClick={() => this.select(fileURL)}>{fileName}</ListGroup.Item>
+            return <ListGroup.Item
+                className={'text-white sidebar-list-item' + ((fileName.includes(this.getActiveFile())) ? ' sidebar-list-item-active' : '')}
+                bsPrefix='sidebar-list-item'
+                key={index}
+                action
+                onClick={() => this.select(fileURL)}>
+                {fileName}
+            </ListGroup.Item>
         })
     }
 
@@ -63,7 +81,7 @@ class Viewer extends Component {
                         </Nav>
                     </Navbar>
                     <main>
-                        {this.areFiles() ? <CornerstoneViewer files={this.getFiles()} select={(selectRef) => this.select = selectRef} /> : <FileUpload setFiles={this.setFiles} />}
+                        {this.areFiles() ? <CornerstoneViewer files={this.getFiles()} select={(selectRef) => this.select = selectRef} setActiveFile={this.setActiveFile} /> : <FileUpload setFiles={this.setFiles} />}
                         {!isLoggedIn() && (<Navigate to='/login' />)}
                     </main>
                 </div>

@@ -51,6 +51,20 @@ const FileUpload = ({ setFiles }) => {
     })
   }
 
+  const getFileUploadProgress = () => {
+    let total = 0;
+    let upload = 0;
+
+    uploadFiles.forEach((progress) => {
+      upload += progress;
+      total += 100;
+    });
+
+    let percentage = Math.round(upload / total * 100);
+
+    return <ProgressBar variant={percentage >= 100 ? 'success' : 'primary'} now={percentage} label={`${percentage}%`} />
+  }
+
   const getFileList = () => {
     let list
     if (isUploadingFiles()) {
@@ -102,7 +116,7 @@ const FileUpload = ({ setFiles }) => {
               ref={dropzoneRef}
               className='upload-card-body-dropzone'
               multiple={true}
-              onDrop={acceptedFiles => { setLocalFiles(acceptedFiles); setHover(false) }}
+              onDrop={acceptedFiles => { setError(""); setLocalFiles(acceptedFiles); setHover(false) }}
               onDropRejected={() => { setError("Invalid file format, you must use DICOM files."); setHover(false) }}
               onDragEnter={() => setHover(true)}
               onDragLeave={() => setHover(false)}>
@@ -125,11 +139,14 @@ const FileUpload = ({ setFiles }) => {
           )}
         </Card.Body>
         <Card.Footer>
-          {!hasSelectedFiles() ?
-            <Button variant='secondary' onClick={() => { if (dropzoneRef.current) dropzoneRef.current.open() }} autoFocus>Select Files</Button>
-            :
-            <Button className='btn-block' variant='primary' type='submit' autoFocus>Upload</Button>
-          }
+          {!isUploadingFiles() ? (
+            !hasSelectedFiles() ?
+              <Button variant='secondary' onClick={() => { if (dropzoneRef.current) dropzoneRef.current.open() }} autoFocus>Select Files</Button>
+              :
+              <Button className='btn-block' variant='primary' type='submit' autoFocus>Upload</Button>
+          ) : (
+            getFileUploadProgress()
+          )}
         </Card.Footer>
       </Card>
     </Form>
