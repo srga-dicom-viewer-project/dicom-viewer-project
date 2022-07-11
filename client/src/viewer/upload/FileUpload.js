@@ -1,6 +1,7 @@
 import React, { createRef, useState } from 'react';
-import { Alert, Button, Card, Form, ProgressBar } from 'react-bootstrap';
+import { Button, Card, Form, ProgressBar } from 'react-bootstrap';
 import { BoxArrowUp } from 'react-bootstrap-icons';
+import { unzipSync, unzip } from 'fflate';
 import Dropzone from 'react-dropzone';
 import axios from 'axios';
 import './FileUpload.css';
@@ -51,6 +52,20 @@ const FileUpload = ({ setFiles }) => {
     })
   }
 
+  const getFileUploadProgress = () => {
+    let total = 0;
+    let upload = 0;
+
+    uploadFiles.forEach((progress) => {
+      upload += progress;
+      total += 100;
+    });
+
+    let percentage = Math.round(upload / total * 100);
+
+    return <ProgressBar variant={percentage >= 100 ? 'success' : 'primary'} now={percentage} label={`${percentage}%`} />
+  }
+
   const getFileList = () => {
     let list
     if (isUploadingFiles()) {
@@ -62,13 +77,35 @@ const FileUpload = ({ setFiles }) => {
     return <table align='center'><tbody>{list}</tbody></table>
   }
 
+  const getFilesFromZip = async (zipFile, multithreaded = true) => {
+    const zipBuffer = new Uint8Array(await zipFile.arrayBuffer())
+    const unzipped = multithreaded ?
+      await new Promise((resolve, reject) => unzip(zipBuffer, (err, unzipped) => err ? reject(err)
+        :
+        resolve(unzipped)))
+      : unzipSync(zipBuffer)
+
+    return Object.keys(unzipped).filter(filename => unzipped[filename].length > 0).map(filename => new File([unzipped[filename]], filename))
+  }
+
   const onSubmit = async event => {
     event.preventDefault()
 
-    // This just adds all the files to the upload files map and adds a progress of 0
-    setUploadFiles(new Map(Array.from(localFiles).map(file => [file.name, 0])))
+    let files = []
 
+    // Checking for ZIPs
     for (let file of localFiles) {
+      if (file.type.includes("zip")) {
+        files = files.concat((await getFilesFromZip(file)).filter(zippedFile => zippedFile.name.endsWith(".dcm") || zippedFile.name.endsWith(".dicom")))
+      } else {
+        files.push(file)
+      }
+    }
+
+    // This just adds all the files to the upload files map and adds a progress of 0
+    setUploadFiles(new Map(Array.from(files).map(file => [file.name, 0])))
+
+    for (let file of files) {
       const formData = new FormData()
       formData.append('file', file)
 
@@ -95,14 +132,16 @@ const FileUpload = ({ setFiles }) => {
           {!hasSelectedFiles() ? (
             <Dropzone
               accept={{
-                '*/dicom': ['.dcm'],
-                'image/dcm': [],
-                '*/dcm': ['.dicom']
+                'application/dcm': ['.dcm'],
+                'application/dicom': ['.dicom'],
+                'application/zip': ['.zip'],
+                'application/x-zip-compressed': ['.zip'],
+                'multipart/x-zip': ['.zip'],
               }}
               ref={dropzoneRef}
               className='upload-card-body-dropzone'
               multiple={true}
-              onDrop={acceptedFiles => { setLocalFiles(acceptedFiles); setHover(false) }}
+              onDrop={acceptedFiles => { setError(""); setLocalFiles(acceptedFiles); setHover(false) }}
               onDropRejected={() => { setError("Invalid file format, you must use DICOM files."); setHover(false) }}
               onDragEnter={() => setHover(true)}
               onDragLeave={() => setHover(false)}>
@@ -125,11 +164,14 @@ const FileUpload = ({ setFiles }) => {
           )}
         </Card.Body>
         <Card.Footer>
-          {!hasSelectedFiles() ?
-            <Button variant='secondary' onClick={() => { if (dropzoneRef.current) dropzoneRef.current.open() }} autoFocus>Select Files</Button>
-            :
-            <Button className='btn-block' variant='primary' type='submit' autoFocus>Upload</Button>
-          }
+          {!isUploadingFiles() ? (
+            !hasSelectedFiles() ?
+              <Button variant='secondary' onClick={() => { if (dropzoneRef.current) dropzoneRef.current.open() }} autoFocus>Select Files</Button>
+              :
+              <Button className='btn-block' variant='primary' type='submit' autoFocus>Upload</Button>
+          ) : (
+            getFileUploadProgress()
+          )}
         </Card.Footer>
       </Card>
     </Form>
