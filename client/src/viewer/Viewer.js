@@ -48,7 +48,7 @@ class Viewer extends Component {
     getFileElements = () => {
         return [...this.getFiles()].map(([fileName, fileURL], index) => {
             return <ListGroup.Item
-                className={'text-white sidebar-list-item' + ((fileName.includes(this.getActiveFile())) ? ' sidebar-list-item-active' : '')}
+                className={'text-white sidebar-list-item' + ((fileURL.includes(this.getActiveFile())) ? ' sidebar-list-item-active' : '')}
                 bsPrefix='sidebar-list-item'
                 key={index}
                 action

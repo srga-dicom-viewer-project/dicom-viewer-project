@@ -62,7 +62,7 @@ const CornerstoneViewer = ({ files, select, setActiveFile }) => {
                 imageIdIndex={state.imageIdIndex}
                 activeTool={state.activeTool}
                 isStackPrefetchEnabled={true}
-                onNewImage={(event) => setActiveFile(event.sopInstanceUid)}
+                onNewImage={(event) => setActiveFile(state.imageIds[event.currentImageIdIndex])}
             />
         </Card>
     );
