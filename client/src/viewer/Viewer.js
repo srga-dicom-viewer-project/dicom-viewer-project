@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
+import { Button, ListGroup, Nav, Navbar } from 'react-bootstrap';
 import { Navigate } from 'react-router-dom';
-import { Button, ListGroup, Nav, Navbar, } from 'react-bootstrap';
 import { isLoggedIn, setLoggedIn } from '../login/Login';
-import CornerstoneViewer from './cornerstone/CornerstoneViewer';
+import LeadtoolsViewer from './leadtools/LeadtoolsViewer';
 import FileUpload from './upload/FileUpload';
 import './Viewer.css';
 
@@ -81,7 +81,7 @@ class Viewer extends Component {
                         </Nav>
                     </Navbar>
                     <main>
-                        {this.areFiles() ? <CornerstoneViewer files={this.getFiles()} select={(selectRef) => this.select = selectRef} setActiveFile={this.setActiveFile} /> : <FileUpload setFiles={this.setFiles} />}
+                        {this.areFiles() ? (<LeadtoolsViewer files={this.getFiles()} />) : <FileUpload setFiles={this.setFiles} />}
                         {!isLoggedIn() && (<Navigate to='/login' />)}
                     </main>
                 </div>

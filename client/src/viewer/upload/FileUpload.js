@@ -1,9 +1,9 @@
+import axios from 'axios';
+import { unzip, unzipSync } from 'fflate';
 import React, { createRef, useState } from 'react';
 import { Button, Card, Form, ProgressBar } from 'react-bootstrap';
 import { BoxArrowUp } from 'react-bootstrap-icons';
-import { unzipSync, unzip } from 'fflate';
 import Dropzone from 'react-dropzone';
-import axios from 'axios';
 import './FileUpload.css';
 
 const FileUpload = ({ setFiles }) => {
@@ -114,7 +114,7 @@ const FileUpload = ({ setFiles }) => {
           setUploadFiles(prev => new Map([...prev, [file.name, parseInt(Math.round((progressEvent.loaded * 100) / progressEvent.total))]]))
         }
       }).then(response => {
-        uploadedFiles.set(response.data.fileName, `wadouri:${response.data.fileURL}`)
+        uploadedFiles.set(response.data.fileName, response.data.fileURL)
       }).catch((error) => {
         setUploadFiles(prev => new Map([...prev, [file.name, prev.get(file.name) * -1]]))
         setError(error.message)
