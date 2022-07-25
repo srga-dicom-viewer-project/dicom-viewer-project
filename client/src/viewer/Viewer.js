@@ -46,13 +46,13 @@ class Viewer extends Component {
     }
 
     getFileElements = () => {
-        return [...this.getFiles()].map(([fileName, fileURL], index) => {
+        return [...this.getFiles()].map(([fileName, fileData], index) => {
             return <ListGroup.Item
-                className={'text-white sidebar-list-item' + ((fileURL.includes(this.getActiveFile())) ? ' sidebar-list-item-active' : '')}
+                className={'text-white sidebar-list-item' + ((this.getFiles().size > 1) && (fileData.url.includes(this.getActiveFile())) ? ' sidebar-list-item-active' : '')}
                 bsPrefix='sidebar-list-item'
                 key={index}
                 action
-                onClick={() => this.select(fileURL)}>
+                onClick={() => this.select(fileData.url)}>
                 {fileName}
             </ListGroup.Item>
         })
@@ -81,7 +81,7 @@ class Viewer extends Component {
                         </Nav>
                     </Navbar>
                     <main>
-                        {this.areFiles() ? (<LeadtoolsViewer files={this.getFiles()} />) : <FileUpload setFiles={this.setFiles} />}
+                        {this.areFiles() ? (<LeadtoolsViewer files={this.getFiles()} select={(selectRef) => this.select = selectRef} />) : <FileUpload setFiles={this.setFiles} />}
                         {!isLoggedIn() && (<Navigate to='/login' />)}
                     </main>
                 </div>

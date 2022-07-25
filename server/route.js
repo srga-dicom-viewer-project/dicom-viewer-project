@@ -1,18 +1,16 @@
 const fileUpload = require('express-fileupload'),
-      path = require('path'),
-      AWS = require('aws-sdk'),
-      Helper = require('@accusoft/document-processing-helper'),
-      fs = require('fs');
+    path = require('path'),
+    AWS = require('aws-sdk'),
+    dcmjsImaging = require('dcmjs-imaging'),
+    { DicomImage, NativePixelDecoder } = dcmjsImaging,
+    Jimp = require('jimp');
 
 const s3 = new AWS.S3({
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
 });
 
-const documentProcessingHelper = new Helper({
-    prizmDocServerBaseUrl: process.env.ACCUSOFT_API_URL,
-    apiKey: process.env.ACCUSOFT_API_KEY
-});
+NativePixelDecoder.initializeAsync();
 
 module.exports = app => {
     app.use(fileUpload());
@@ -23,33 +21,50 @@ module.exports = app => {
         }
 
         const file = req.files.file;
+        const fileName = file.name + '.png';
 
-        const output = await documentProcessingHelper.convert({
-            input: file.data,
-            outputFormat: 'png'
-        });
-        await output[0].saveToFile('output.png');
+        const fileBuffer = file.data;
+        const dicomImage = new DicomImage(fileBuffer.buffer.slice(fileBuffer.byteOffset, fileBuffer.byteOffset + fileBuffer.byteLength));
 
-        //console.log(output[0])
-        const fileContent = fs.readFileSync('output.png');
+        const renderingResult = dicomImage.render();
+        const renderedPixels = Buffer.from(renderingResult.pixels);
 
-        const params = {
-            ACL: 'public-read',
-            Bucket: process.env.AWS_BUCKET_NAME,
-            Key: `${file.name}.png&frame=0&x=0&y=0&w=0&h=0&xr=307&yr=371&wldata=true`,
-            Body: fileContent,
+        const rawImageData = {
+            data: renderedPixels,
+            width: dicomImage.getWidth(),
+            height: dicomImage.getHeight(),
         };
 
-        const upload = await s3.upload(params, (err, data) => {
-            if (err) {
-                console.log(err)
-                reject(err)
+        Jimp.read(rawImageData, function (err, image) {
+            if (!err) {
+                image.getBuffer(Jimp.MIME_PNG, async function (err, data) {
+                    const params = {
+                        ACL: 'public-read',
+                        Bucket: process.env.AWS_BUCKET_NAME,
+                        Key: `${fileName}&frame=0&x=0&y=0&w=0&h=0&xr=307&yr=371&wldata=true`,
+                        Body: data,
+                    };
+
+                    const upload = await s3.upload(params, (err, data) => {
+                        if (err) {
+                            console.log(err);
+                            reject(err);
+                        }
+
+                        resolve(data.Location);
+                    }).promise();
+
+                    delete dicomImage.elements.PixelData;
+                    delete dicomImage.elements.RequestAttributesSequence;
+                    
+                    var fileUrl = upload.Location;
+                    fileUrl = fileUrl.substring(0, fileUrl.indexOf(fileName) + fileName.length);
+                    res.json({ fileName: fileName, fileURL: fileUrl, dicomData: dicomImage });
+                });
+            } else {
+                console.log(err);
             }
-
-            resolve(data.Location)
-        }).promise();
-
-        res.json({ fileName: file.name + '.png', fileURL: `https://${process.env.AWS_BUCKET_NAME}.s3.amazonaws.com/${file.name}.png` });
+        });
     });
 
     // You need to have the following Leadtools scripts inside the directory below:

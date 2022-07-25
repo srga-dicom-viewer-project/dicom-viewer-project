@@ -114,7 +114,7 @@ const FileUpload = ({ setFiles }) => {
           setUploadFiles(prev => new Map([...prev, [file.name, parseInt(Math.round((progressEvent.loaded * 100) / progressEvent.total))]]))
         }
       }).then(response => {
-        uploadedFiles.set(response.data.fileName, response.data.fileURL)
+        uploadedFiles.set(response.data.fileName, { url: response.data.fileURL, data: response.data.dicomData })
       }).catch((error) => {
         setUploadFiles(prev => new Map([...prev, [file.name, prev.get(file.name) * -1]]))
         setError(error.message)
