@@ -52,7 +52,7 @@ class Viewer extends Component {
                 bsPrefix='sidebar-list-item'
                 key={index}
                 action
-                onClick={() => this.select(fileData.url)}>
+                onClick={() => this.select(index)}>
                 {fileName}
             </ListGroup.Item>
         })
@@ -81,7 +81,7 @@ class Viewer extends Component {
                         </Nav>
                     </Navbar>
                     <main>
-                        {this.areFiles() ? (<LeadtoolsViewer files={this.getFiles()} select={(selectRef) => this.select = selectRef} />) : <FileUpload setFiles={this.setFiles} />}
+                        {this.areFiles() ? (<LeadtoolsViewer files={this.getFiles()} select={(selectRef) => this.select = selectRef} setActiveFile={this.setActiveFile} />) : <FileUpload setFiles={this.setFiles} />}
                         {!isLoggedIn() && (<Navigate to='/login' />)}
                     </main>
                 </div>

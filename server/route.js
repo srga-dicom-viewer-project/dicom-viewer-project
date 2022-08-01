@@ -41,7 +41,7 @@ module.exports = app => {
                     const params = {
                         ACL: 'public-read',
                         Bucket: process.env.AWS_BUCKET_NAME,
-                        Key: `${fileName}&frame=0&x=0&y=0&w=0&h=0&xr=307&yr=371&wldata=true`,
+                        Key: `${fileName}&frame=0&x=0&y=0&w=0&h=0&xr=${rawImageData.width}&yr=${rawImageData.height}&wldata=true`,
                         Body: data,
                     };
 

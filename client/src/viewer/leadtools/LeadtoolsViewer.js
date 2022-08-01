@@ -1,7 +1,73 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card } from 'react-bootstrap';
 
-const LeadtoolsViewer = ({ files, select }) => {
+const tags = {
+    "topRight": {
+        "dicomData": {
+            "Name": "PatientName",
+            "PID": "PatientID",
+            "Sex": "PatientSex",
+            "DOB": "PatientBirthDate"
+        },
+        "textType": {
+            "laterality": 5 // Should be 4
+        }
+    },
+    "topLeft": {
+        "dicomData": {
+            "Acc#": "AccessionNumber",
+            "Study Date": "StudyDate",
+            "Study": "StudyDescription",
+            "Series": "SeriesDescription",
+            "Se#": "SeriesNumber",
+        },
+        "textType": {
+            "frameNumber": 0,
+            "instanceNumber": 6,
+            "windowLevel": 7,
+        }
+    },
+    "bottomLeft": {
+        "dicomData": {},
+        "textType": {
+            "imageQuality": 0,
+            "fieldOfView": 1
+        }
+    },
+    "centerLeft": {
+        "dicomData": {},
+        "textType": {
+            "leftOrientation": 0
+        }
+    },
+    "centerTop": {
+        "dicomData": {},
+        "textType": {
+            "topOrientation": 0
+        }
+    },
+    "centerRight": {
+        "dicomData": {},
+        "textType": {
+            "rightOrientation": 0
+        }
+    },
+    "centerBottom": {
+        "dicomData": {},
+        "textType": {
+            "bottomOrientation": 0
+        }
+    },
+    "bottomRight": {
+        "dicomData": {},
+        "textType": {
+            "mprType": 0
+        }
+    }
+}
+const LeadtoolsViewer = ({ files, select, setActiveFile }) => {
+    const [cell, setCell] = useState({});
+
     useEffect(() => {
         // Must set license otherwise this will not work
         lt.RasterSupport.setLicenseText(process.env.REACT_APP_LEADTOOLS_LICENSE, process.env.REACT_APP_LEADTOOLS_DEVELOPER_KEY);
@@ -20,9 +86,6 @@ const LeadtoolsViewer = ({ files, select }) => {
         // Create a cell. It will contain an image or a series of images, based on how many Frames are added (see below for more details).
         var cell = new lt.Controls.Medical.Cell(viewer, viewer.get_divId(), 1, 1);
 
-        // Set the show border to "true", to show a border around the cell.
-        cell.set_showFrameBorder(true);
-
         // Add the cell to the viewer.
         viewer.layout.get_items().add(cell);
 
@@ -33,6 +96,9 @@ const LeadtoolsViewer = ({ files, select }) => {
             const height = file.data.elements.Rows;
 
             var cellFrame = new lt.Controls.Medical.Frame(cell);
+
+            cellFrame.set_enableDraw(true);
+
             cell.get_frames().add(cellFrame);
 
             var mrtiInfo = new lt.Controls.Medical.MRTIImage();
@@ -41,35 +107,21 @@ const LeadtoolsViewer = ({ files, select }) => {
             mrtiInfo.fullDpi = lt.LeadSizeD.create(width, height);
 
             // the tile size, recommended value is 256
-            mrtiInfo.tileSize = lt.LeadSizeD.create(256, 256);
+            mrtiInfo.tileSize = lt.LeadSizeD.create(width, height);
             mrtiInfo.frameIndex = 0;
 
             // does this image support window level.
             mrtiInfo.supportWindowLevel = true;
 
-            // different resolution for the image.
-            var resolutions = [
-                { width: 2460, height: 2970 },
-                { width: 1230, height: 1485 },
-                { width: 615, height: 742 },
-                { width: 307, height: 371 },
-                { width: 153, height: 185 },
-                { width: 76, height: 92 },
-            ];
-            mrtiInfo.resolutions = [];
-            for (var i = 0; i < resolutions.length; i++) {
-                mrtiInfo.resolutions[i] = lt.LeadSizeD.create(resolutions[i].width, resolutions[i].height);
-            }
+            // sets the resolution of the image
+            mrtiInfo.resolutions = [lt.LeadSizeD.create(width, height)];
 
             // the image width and height.
             cellFrame.set_width(width);
             cellFrame.set_height(height);
 
             // the image full size.
-            mrtiInfo.fullSize = lt.LeadSizeD.create(
-                cellFrame.get_width(),
-                cellFrame.get_height()
-            );
+            mrtiInfo.fullSize = lt.LeadSizeD.create(cellFrame.get_width(), cellFrame.get_height());
 
             // now we need the image URL,
             // sets the image url to the uploaded image
@@ -93,39 +145,86 @@ const LeadtoolsViewer = ({ files, select }) => {
             imageInfo.firstStoredPixelValueMapped = 0;
 
             cellFrame.set_information(imageInfo);
+
+            cellFrame.set_JSON(file.data.elements);
         });
 
         // Creating the window level action
         var windowLevel = new lt.Controls.Medical.WindowLevelAction();
         // Setting the action to left mouse button.
-        windowLevel.button = lt.Controls.MouseButtons.left; 
+        windowLevel.button = lt.Controls.MouseButtons.left;
         // Setting the command
-        cell.setCommand(0, windowLevel); 
+        cell.setCommand(0, windowLevel);
         // Running it
-        cell.runCommand(0); 
+        cell.runCommand(0);
 
         // Creating the scale action
-        var scale = new lt.Controls.Medical.ScaleAction(); 
+        var scale = new lt.Controls.Medical.ScaleAction();
         // Setting the button to middle mouse button.
-        scale.button = lt.Controls.MouseButtons.middle; 
+        scale.button = lt.Controls.MouseButtons.middle;
         // Setting the command
         cell.setCommand(0, scale);
         // Running it 
-        cell.runCommand(0); 
+        cell.runCommand(0);
 
         // Creating the pan action
-        var offset = new lt.Controls.Medical.OffsetAction(); 
+        var offset = new lt.Controls.Medical.OffsetAction();
         // Setting the button to right mouse button.
-        offset.button = lt.Controls.MouseButtons.right; 
+        offset.button = lt.Controls.MouseButtons.right;
         // Setting the command
-        cell.setCommand(0, offset); 
+        cell.setCommand(0, offset);
         // Running it
-        cell.runCommand(0); 
+        cell.runCommand(0);
+
+        // Allow overlay text to be visible
+        cell.set_overlayTextVisible(true);
+
+        // Displays the current info
+        addOverlay(cell.get_frames().toArray()[cell.currentOffset]);
+
+        // Sets the current file to the current one
+        setActiveFile(Array.from(files)[cell.currentOffset][1].url);
+
+        // This will set the current file on the left side of the viewer to the one that is shown
+        cell.add_currentOffsetChanged((e) => {
+            setActiveFile(Array.from(files)[cell.currentOffset][1].url);
+            addOverlay(cell.get_frames().toArray()[cell.currentOffset]);
+        });
+
+        setCell(cell);
     }, []);
 
-    select((text) => {
-        // Run stuff here
+    select((index) => {
+        cell.currentOffset = index;
     });
+
+    const addOverlay = (frame) => {
+        const json = frame.get_JSON();
+
+        frame.parentCell.get_overlays().clear();
+        for (const [position, data] of Object.entries(tags)) {
+            Object.entries(data.dicomData).forEach(([name, path], index) => {
+                frame.parentCell.get_overlays().add(createTag(`${name}: ${json[path]}`, index + 1, lt.Controls.Medical.OverlayAlignment[position]));
+            });
+            Object.entries(data.textType).forEach(([type, positionIndex]) => {
+                frame.parentCell.get_overlays().add(createOverlay('', positionIndex, lt.Controls.Medical.OverlayAlignment[position], lt.Controls.Medical.OverlayTextType[type]));
+            });
+        }
+    };
+
+    const createTag = (text, positionIndex, alignment) => {
+        return createOverlay(text, positionIndex, alignment, lt.Controls.Medical.OverlayTextType.userData)
+    };
+
+    const createOverlay = (text, positionIndex, alignment, textType) => {
+        var overlay = new lt.Controls.Medical.OverlayText;
+        overlay.text = text;
+        overlay.type = textType;
+        overlay.positionIndex = positionIndex;
+        overlay.weight = 1;
+        overlay.alignment = alignment;
+        return overlay;
+    };
 
     return (
         <Card bg='dark' style={{ width: '75%', height: '70vh', display: 'flex', flexWrap: 'nowrap', padding: '10px' }}>
