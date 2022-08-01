@@ -10,7 +10,7 @@ const tags = {
             "DOB": "PatientBirthDate"
         },
         "textType": {
-            "laterality": 5 // Should be 4
+            "laterality": 4
         }
     },
     "topLeft": {
@@ -203,12 +203,24 @@ const LeadtoolsViewer = ({ files, select, setActiveFile }) => {
 
         frame.parentCell.get_overlays().clear();
         for (const [position, data] of Object.entries(tags)) {
-            Object.entries(data.dicomData).forEach(([name, path], index) => {
-                frame.parentCell.get_overlays().add(createTag(`${name}: ${json[path]}`, index + 1, lt.Controls.Medical.OverlayAlignment[position]));
-            });
+            var overlays = [];
+            
             Object.entries(data.textType).forEach(([type, positionIndex]) => {
-                frame.parentCell.get_overlays().add(createOverlay('', positionIndex, lt.Controls.Medical.OverlayAlignment[position], lt.Controls.Medical.OverlayTextType[type]));
+                overlays[positionIndex] = createOverlay(null, positionIndex, lt.Controls.Medical.OverlayAlignment[position], lt.Controls.Medical.OverlayTextType[type]);
             });
+            Object.entries(data.dicomData).forEach(([name, path], index) => {
+                var positionIndex = index;
+                while (overlays[positionIndex] !== undefined) {
+                    positionIndex++;
+                }
+                overlays[positionIndex] = createTag(`${name}: ${json[path]}`, positionIndex, lt.Controls.Medical.OverlayAlignment[position]);
+            });
+
+            for (var i = 0; i < overlays.length; i++) {
+                var overlay = overlays[i];
+                overlay.positionIndex = i;
+                frame.parentCell.get_overlays().add(overlay);
+            }
         }
     };
 
