@@ -64,7 +64,7 @@ const tags = {
             "mprType": 0
         }
     }
-}
+};
 const LeadtoolsViewer = ({ files, select, setActiveFile }) => {
     const [cell, setCell] = useState({});
 
@@ -83,13 +83,23 @@ const LeadtoolsViewer = ({ files, select, setActiveFile }) => {
         // Create the medical viewer control
         var viewer = new lt.Controls.Medical.MedicalViewer(imageViewerDiv, 1, 1);
 
+        // Disable exploding since only one cell is used
+        viewer.set_explodeType(lt.Controls.Medical.ExplodeType.None);
+
         // Create a cell. It will contain an image or a series of images, based on how many Frames are added (see below for more details).
         var cell = new lt.Controls.Medical.Cell(viewer, viewer.get_divId(), 1, 1);
 
         // Add the cell to the viewer.
         viewer.layout.get_items().add(cell);
 
+        // Select the cell
         cell.set_selected(true);
+
+        // Set selected border to black
+        cell.set_selectedBorderColor('#000000')
+
+        // Allow overlay text to be visible
+        cell.set_overlayTextVisible(true);
 
         Array.from(files.values()).forEach(file => {
             const width = file.data.elements.Columns;
@@ -106,7 +116,7 @@ const LeadtoolsViewer = ({ files, select, setActiveFile }) => {
             // The image dpi.
             mrtiInfo.fullDpi = lt.LeadSizeD.create(width, height);
 
-            // the tile size, recommended value is 256
+            // the tile size
             mrtiInfo.tileSize = lt.LeadSizeD.create(width, height);
             mrtiInfo.frameIndex = 0;
 
@@ -176,27 +186,30 @@ const LeadtoolsViewer = ({ files, select, setActiveFile }) => {
         // Running it
         cell.runCommand(0);
 
-        // Allow overlay text to be visible
-        cell.set_overlayTextVisible(true);
+        // Update the cell
+        updateCell(cell);
 
-        // Displays the current info
-        addOverlay(cell.get_frames().toArray()[cell.currentOffset]);
+        // Adds an event listener to update the cell every time a different frame is displayed
+        cell.add_currentOffsetChanged(() => updateCell(cell));
 
-        // Sets the current file to the current one
-        setActiveFile(Array.from(files)[cell.currentOffset][1].url);
-
-        // This will set the current file on the left side of the viewer to the one that is shown
-        cell.add_currentOffsetChanged((e) => {
-            setActiveFile(Array.from(files)[cell.currentOffset][1].url);
-            addOverlay(cell.get_frames().toArray()[cell.currentOffset]);
-        });
-
+        // Sets the cell state so that other parts of the component can use it
         setCell(cell);
     }, []);
 
     select((index) => {
         cell.currentOffset = index;
     });
+
+    const updateCell = (cell) => {
+        // This will set the current file on the left side of the viewer to the one that is shown
+        setActiveFile(Array.from(files)[cell.currentOffset][1].url);
+
+        // Adds an overlay to show the current info of the image
+        addOverlay(cell.get_frames().toArray()[cell.currentOffset]);
+
+        // Run onSizeChanged so that the overlay shows
+        cell.viewer.onSizeChanged();
+    }
 
     const addOverlay = (frame) => {
         const json = frame.get_JSON();
@@ -225,7 +238,7 @@ const LeadtoolsViewer = ({ files, select, setActiveFile }) => {
     };
 
     const createTag = (text, positionIndex, alignment) => {
-        return createOverlay(text, positionIndex, alignment, lt.Controls.Medical.OverlayTextType.userData)
+        return createOverlay(text, positionIndex, alignment, lt.Controls.Medical.OverlayTextType.userData);
     };
 
     const createOverlay = (text, positionIndex, alignment, textType) => {

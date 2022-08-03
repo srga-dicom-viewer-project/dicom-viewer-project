@@ -5,7 +5,7 @@ https://trello.com/b/XyImPIjY/kanban-board
 
 ## How to install
 1. Clone the repository into a directory
-2. In that directory run `npm install --force`
+2. In that directory run `npm install`
 3. Fill out the required fields in the .env
 4. Place the required Leadtools libraries in the `client/src/viewer/leadtools/lib` directory
 5. Then run `npm run build`
