@@ -1,10 +1,10 @@
 const express = require('express'),
-      path = require('path'),
-      dotenv = require('dotenv').config({ path: path.resolve(__dirname, '../.env') }),
-      cors = require('cors'),
-      app = express(),
-      route = require('./route.js'),
-      port = process.env.REACT_APP_API_PORT;
+    path = require('path'),
+    dotenv = require('dotenv').config({ path: path.resolve(__dirname, '../.env') }),
+    cors = require('cors'),
+    app = express(),
+    route = require('./route.js'),
+    port = process.env.REACT_APP_API_PORT;
 
 app.use(express.static(path.resolve(__dirname, '../client/build')));
 

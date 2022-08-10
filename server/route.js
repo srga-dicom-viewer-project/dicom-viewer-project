@@ -7,7 +7,14 @@ const s3 = new AWS.S3({
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
 });
 
+const url = require('url');
+const proxy = require('express-http-proxy');
+const apiProxy = proxy('https://react-vtkjs-viewport.netlify.app/headsq.vti/', {
+    proxyReqPathResolver: req => url.parse(req.baseUrl).path
+});
+
 module.exports = app => {
+
     app.use(fileUpload());
 
     app.post('/api/upload', async (req, res) => {
@@ -34,6 +41,8 @@ module.exports = app => {
 
         res.json({ fileName: file.name, fileURL: upload.Location });
     });
+
+    app.use('/headsq.vti/*', apiProxy);
 
     app.get('*', (req, res) => {
         res.sendFile(path.resolve(__dirname, '../client/build', 'index.html'));

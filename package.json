@@ -5,28 +5,59 @@
   "scripts": {
     "start:react": "parcel watch client/index.html --dist-dir client/build",
     "start": "node server/index.js",
-    "build": "parcel build client/index.html --no-source-maps --dist-dir client/build"
+    "build": "webpack --mode=development",
+    "dev": "webpack-dev-server --mode=development",
+    "serve": "webpack serve",
+    "build:parcel": "parcel build client/index.html --no-source-maps --dist-dir client/build"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "parcel": "^2.0.0-rc.0"
+    "@babel/core": "^7.18.10",
+    "@babel/plugin-external-helpers": "^7.18.6",
+    "@babel/plugin-proposal-class-properties": "^7.18.6",
+    "@babel/plugin-transform-runtime": "^7.18.10",
+    "@babel/preset-env": "^7.18.10",
+    "@babel/preset-react": "^7.18.6",
+    "babel-loader": "^8.2.5",
+    "clean-webpack-plugin": "^4.0.0",
+    "copy-webpack-plugin": "^11.0.0",
+    "css-loader": "^6.7.1",
+    "dotenv-webpack": "^8.0.0",
+    "html-loader": "^4.1.0",
+    "html-webpack-plugin": "^5.5.0",
+    "parcel": "^2.0.0-rc.0",
+    "style-loader": "^3.3.1",
+    "webpack": "^5.74.0",
+    "webpack-cli": "^4.10.0"
   },
   "dependencies": {
+    "@kitware/vtk.js": "^25.6.0",
+    "autoprefixer": "^10.4.8",
     "aws-sdk": "^2.1158.0",
     "axios": "^0.27.2",
     "bootstrap": "^5.1.3",
+    "cornerstone-core": "^2.6.1",
+    "cornerstone-tools": "^6.0.7",
+    "cornerstone-wado-image-loader": "^4.2.1",
     "cors": "^2.8.5",
+    "dicomweb-client": "^0.8.4",
     "express": "^4.18.1",
     "express-fileupload": "^1.4.0",
+    "express-http-proxy": "^1.6.3",
     "fflate": "^0.7.3",
+    "hammerjs": "^2.0.8",
     "react": "^18.2.0",
     "react-bootstrap": "^2.4.0",
     "react-bootstrap-icons": "^1.8.4",
     "react-cornerstone-viewport": "^4.1.4",
     "react-dom": "^18.2.0",
     "react-dropzone": "^14.2.1",
-    "react-router-dom": "^6.3.0"
+    "react-router-dom": "^6.3.0",
+    "react-vtkjs-viewport": "^0.14.4",
+    "url": "^0.11.0",
+    "vtk.js": "^25.6.0",
+    "webpack-dev-server": "^4.9.3"
   }
 }
