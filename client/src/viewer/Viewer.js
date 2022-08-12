@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
+import { Button, Card, ListGroup, Nav, Navbar } from 'react-bootstrap';
 import { Navigate } from 'react-router-dom';
-import { Button, ListGroup, Nav, Navbar, } from 'react-bootstrap';
 import { isLoggedIn, setLoggedIn } from '../login/Login';
 import CornerstoneViewer from './cornerstone/CornerstoneViewer';
+import LeadtoolsViewer from './leadtools/LeadtoolsViewer';
 import FileUpload from './upload/FileUpload';
 import './Viewer.css';
 
@@ -12,8 +13,19 @@ class Viewer extends Component {
 
         this.state = {
             files: new Map(),
-            activeFile: ''
+            activeFile: '',
+            viewport: ''
         };
+    }
+
+    setViewport = (viewport) => {
+        this.setState({
+            viewport: viewport
+        });
+    }
+
+    getViewport = () => {
+        return this.state.viewport
     }
 
     setFiles = (uploadFiles) => {
@@ -46,16 +58,29 @@ class Viewer extends Component {
     }
 
     getFileElements = () => {
-        return [...this.getFiles()].map(([fileName, fileURL], index) => {
-            return <ListGroup.Item
-                className={'text-white sidebar-list-item' + ((fileURL.includes(this.getActiveFile())) ? ' sidebar-list-item-active' : '')}
-                bsPrefix='sidebar-list-item'
-                key={index}
-                action
-                onClick={() => this.select(fileURL)}>
-                {fileName}
-            </ListGroup.Item>
-        })
+        if (this.getViewport() == 'cornerstone') {
+            return [...this.getFiles()].map(([fileName, fileURL], index) => {
+                return <ListGroup.Item
+                    className={'text-white sidebar-list-item' + ((fileURL.includes(this.getActiveFile())) ? ' sidebar-list-item-active' : '')}
+                    bsPrefix='sidebar-list-item'
+                    key={index}
+                    action
+                    onClick={() => this.select(fileURL)}>
+                    {fileName}
+                </ListGroup.Item>
+            })
+        } else {
+            return [...this.getFiles()].map(([fileName, fileData], index) => {
+                return <ListGroup.Item
+                    className={'text-white sidebar-list-item' + ((this.getFiles().size > 1) && (fileData.url.includes(this.getActiveFile())) ? ' sidebar-list-item-active' : '')}
+                    bsPrefix='sidebar-list-item'
+                    key={index}
+                    action
+                    onClick={() => this.select(index)}>
+                    {fileName}
+                </ListGroup.Item>
+            })
+        }
     }
 
     render() {
@@ -81,12 +106,22 @@ class Viewer extends Component {
                         </Nav>
                     </Navbar>
                     <main>
-                        {this.areFiles() ? <CornerstoneViewer files={this.getFiles()} select={(selectRef) => this.select = selectRef} setActiveFile={this.setActiveFile} /> : <FileUpload setFiles={this.setFiles} />}
-                        {!isLoggedIn() && (<Navigate to='/login' />)}
+                        {this.areFiles() ?
+                            <Card bg='dark' className='viewer'>
+                                {this.getViewport() == 'cornerstone' ?
+                                    <CornerstoneViewer files={this.getFiles()} select={(selectRef) => this.select = selectRef} setActiveFile={this.setActiveFile} />
+                                    :
+                                    <LeadtoolsViewer files={this.getFiles()} select={(selectRef) => this.select = selectRef} setActiveFile={this.setActiveFile} />
+                                }
+                            </Card>
+                            :
+                            <FileUpload setFiles={this.setFiles} viewport={this.getViewport()} setViewport={this.setViewport} />
+                        }
                     </main>
                 </div>
+                {!isLoggedIn() && (<Navigate to='/login' />)}
             </div>
-        )
+        );
     }
 }
 

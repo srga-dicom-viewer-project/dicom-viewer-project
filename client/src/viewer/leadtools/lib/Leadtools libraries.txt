@@ -1,0 +1,8 @@
+You'll need these ones as mentioned in the route.js and index.html files:
+ * Leadtools.js
+ * Leadtools.Controls.js
+ * Leadtools.Annotations.Engine.js
+ * Leadtools.Annotations.Designers.js
+ * Leadtools.Annotations.Rendering.JavaScript.js
+ * Leadtools.Annotations.Automation.js
+ * Leadtools.Controls.Medical.js

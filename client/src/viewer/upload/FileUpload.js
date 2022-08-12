@@ -1,12 +1,12 @@
+import axios from 'axios';
+import { unzip, unzipSync } from 'fflate';
 import React, { createRef, useState } from 'react';
 import { Button, Card, Form, ProgressBar } from 'react-bootstrap';
 import { BoxArrowUp } from 'react-bootstrap-icons';
-import { unzipSync, unzip } from 'fflate';
 import Dropzone from 'react-dropzone';
-import axios from 'axios';
 import './FileUpload.css';
 
-const FileUpload = ({ setFiles }) => {
+const FileUpload = ({ setFiles, viewport, setViewport }) => {
   const [localFiles, setLocalFiles] = useState([]);              // The local files to be uploaded
   const [uploadFiles, setUploadFiles] = useState(new Map());     // The upload files map with the keys being the file name and the value being the upload progress
   const [uploadedFiles, setUploadedFiles] = useState(new Map()); // The uploaded files map with the keys being the file name and the value being the URL
@@ -109,12 +109,16 @@ const FileUpload = ({ setFiles }) => {
       const formData = new FormData()
       formData.append('file', file)
 
-      await axios.post(`${process.env.REACT_APP_API_CONNECTION_STRING}/upload`, formData, {
+      await axios.post(`${process.env.REACT_APP_API_CONNECTION_STRING}/${viewport}`, formData, {
         onUploadProgress: progressEvent => {
           setUploadFiles(prev => new Map([...prev, [file.name, parseInt(Math.round((progressEvent.loaded * 100) / progressEvent.total))]]))
         }
       }).then(response => {
-        uploadedFiles.set(response.data.fileName, `wadouri:${response.data.fileURL}`)
+        if (viewport == 'cornerstone') {
+          uploadedFiles.set(response.data.fileName, `wadouri:${response.data.fileURL}`)
+        } else {
+          uploadedFiles.set(response.data.fileName, { url: response.data.fileURL, data: response.data.dicomData })
+        }
       }).catch((error) => {
         setUploadFiles(prev => new Map([...prev, [file.name, prev.get(file.name) * -1]]))
         setError(error.message)
@@ -164,6 +168,12 @@ const FileUpload = ({ setFiles }) => {
           )}
         </Card.Body>
         <Card.Footer>
+          {!isUploadingFiles() &&
+            <>
+              <Form.Check label='Cornerstone' name='viewport' type='radio' id='cornerstone' required onClick={() => { setViewport('cornerstone') }} />
+              <Form.Check label='LeadTools' name='viewport' type='radio' id='leadtools' required onClick={() => { setViewport('leadtools') }} />
+            </>
+          }
           {!isUploadingFiles() ? (
             !hasSelectedFiles() ?
               <Button variant='secondary' onClick={() => { if (dropzoneRef.current) dropzoneRef.current.open() }} autoFocus>Select Files</Button>

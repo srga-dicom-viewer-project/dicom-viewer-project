@@ -3,11 +3,11 @@
    may work
 */
 
-import dicomParser from 'dicom-parser';
 import cornerstone from 'cornerstone-core';
-import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
 import cornerstoneMath from 'cornerstone-math';
 import cornerstoneTools from 'cornerstone-tools';
+import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
+import dicomParser from 'dicom-parser';
 import Hammer from 'hammerjs';
 
 export default function initCornerstone() {

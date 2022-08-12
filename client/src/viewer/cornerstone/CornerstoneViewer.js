@@ -4,7 +4,6 @@ import CornerstoneViewport from 'react-cornerstone-viewport';
 import * as cornerstone from 'cornerstone-core';
 import * as cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
 import initCornerstone from './initCornerstone.js';
-import './CornerstoneViewer.css';
 
 initCornerstone();
 cornerstoneWADOImageLoader.external.cornerstone = cornerstone;
@@ -54,17 +53,15 @@ const CornerstoneViewer = ({ files, select, setActiveFile }) => {
     });
 
     return (
-        <Card bg='dark' className='cornerstone-viewer'>
-            <CornerstoneViewport
-                className='viewer'
-                tools={state.tools}
-                imageIds={state.imageIds}
-                imageIdIndex={state.imageIdIndex}
-                activeTool={state.activeTool}
-                isStackPrefetchEnabled={true}
-                onNewImage={(event) => setActiveFile(state.imageIds[event.currentImageIdIndex])}
-            />
-        </Card>
+        <CornerstoneViewport
+            style={{ margin: 'auto', height: 'absolute' }}
+            tools={state.tools}
+            imageIds={state.imageIds}
+            imageIdIndex={state.imageIdIndex}
+            activeTool={state.activeTool}
+            isStackPrefetchEnabled={true}
+            onNewImage={(event) => setActiveFile(state.imageIds[event.currentImageIdIndex])}
+        />
     );
 };
 

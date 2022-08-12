@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Alert, Card, Form, Button } from 'react-bootstrap'
+import { Alert, Button, Card, Container, Form, Navbar } from 'react-bootstrap'
 import { Navigate } from 'react-router-dom'
 import '../App.css'
 import './Login.css'
@@ -57,46 +57,53 @@ export class Login extends Component {
 
     render() {
         return (
-            <main>
-                <Card className='text-center'>
-                    <Card.Header className='h2'>LOG IN</Card.Header>
-                    <Card.Body className='form-login'>
-                        <Form onSubmit={this.handleSubmit}>
-                            <Form.Floating>
-                                <Form.Control
-                                    type='email'
-                                    className='form-control'
-                                    id='floatingInput'
-                                    placeholder="Enter email"
-                                    value={this.state.email}
-                                    onChange={this.handleEmailChanged}
-                                    autoFocus
-                                    required />
-                                <Form.Label>Email</Form.Label>
-                            </Form.Floating>
+            <>
+                <Navbar variant='dark' bg='dark' expand='lg' className='justify-content-end'>
+                    <Container fluid>
+                        <Navbar.Brand href="#">DICOM Viewer</Navbar.Brand>
+                    </Container>
+                </Navbar>
+                <main>
+                    <Card bg='dark' className='text-center text-white'>
+                        <Card.Header className='h2'>LOG IN</Card.Header>
+                        <Card.Body className='form-login'>
+                            <Form onSubmit={this.handleSubmit} className='text-dark'>
+                                <Form.Floating>
+                                    <Form.Control
+                                        type='email'
+                                        className='form-control'
+                                        id='floatingInput'
+                                        placeholder="Enter email"
+                                        value={this.state.email}
+                                        onChange={this.handleEmailChanged}
+                                        autoFocus
+                                        required />
+                                    <Form.Label>Email</Form.Label>
+                                </Form.Floating>
 
-                            <Form.Floating>
-                                <Form.Control
-                                    type='password'
-                                    autoComplete='on'
-                                    className='form-control'
-                                    id='floatingPassword'
-                                    placeholder="Enter password"
-                                    value={this.state.password}
-                                    onChange={this.handlePasswordChanged}
-                                    required />
-                                <Form.Label>Password</Form.Label>
-                            </Form.Floating>
+                                <Form.Floating>
+                                    <Form.Control
+                                        type='password'
+                                        autoComplete='on'
+                                        className='form-control'
+                                        id='floatingPassword'
+                                        placeholder="Enter password"
+                                        value={this.state.password}
+                                        onChange={this.handlePasswordChanged}
+                                        required />
+                                    <Form.Label>Password</Form.Label>
+                                </Form.Floating>
 
-                            {this.state.invalid && (<Alert variant='danger'>Invalid email or password.</Alert>)}
+                                {this.state.invalid && (<Alert variant='danger'>Invalid email or password.</Alert>)}
 
-                            <Button className='btn-lg' variant='primary' type='submit'>Log in</Button>
-                        </Form>
-                    </Card.Body>
-                </Card>
+                                <Button variant='primary' type='submit'>Log in</Button>
+                            </Form>
+                        </Card.Body>
+                    </Card>
 
-                {isLoggedIn() && (<Navigate to='/viewer' />)}
-            </main>
+                    {isLoggedIn() && (<Navigate to='/viewer' />)}
+                </main>
+            </>
         )
     }
 }
